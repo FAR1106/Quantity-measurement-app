@@ -39,9 +39,14 @@ public class Qma {
 
         public QuantityLength convertTo(LengthUnit targetUnit) {
             if (targetUnit == null) throw new IllegalArgumentException();
-            double feetValue = this.toFeet();
-            double converted = targetUnit.fromFeet(feetValue);
-            return new QuantityLength(converted, targetUnit);
+            double base = this.toFeet();
+            return new QuantityLength(targetUnit.fromFeet(base), targetUnit);
+        }
+
+        public QuantityLength add(QuantityLength other) {
+            if (other == null) throw new IllegalArgumentException();
+            double sumFeet = this.toFeet() + other.toFeet();
+            return new QuantityLength(this.unit.fromFeet(sumFeet), this.unit);
         }
 
         @Override
@@ -64,28 +69,22 @@ public class Qma {
         return target.fromFeet(base);
     }
 
-    public static double demonstrateLengthConversion(double value, LengthUnit from, LengthUnit to) {
-        return convert(value, from, to);
+    public static QuantityLength add(QuantityLength q1, QuantityLength q2) {
+        if (q1 == null || q2 == null) throw new IllegalArgumentException();
+        return q1.add(q2);
     }
 
-    public static double demonstrateLengthConversion(QuantityLength quantity, LengthUnit to) {
-        return quantity.convertTo(to).value;
-    }
-
-    public static boolean demonstrateLengthEquality(QuantityLength q1, QuantityLength q2) {
-        return q1.equals(q2);
-    }
-
-    public static boolean demonstrateLengthComparison(double v1, LengthUnit u1, double v2, LengthUnit u2) {
-        QuantityLength q1 = new QuantityLength(v1, u1);
-        QuantityLength q2 = new QuantityLength(v2, u2);
-        return q1.equals(q2);
+    public static QuantityLength add(double v1, LengthUnit u1, double v2, LengthUnit u2, LengthUnit target) {
+        if (u1 == null || u2 == null || target == null) throw new IllegalArgumentException();
+        double sumFeet = u1.toFeet(v1) + u2.toFeet(v2);
+        return new QuantityLength(target.fromFeet(sumFeet), target);
     }
 
     public static void main(String[] args) {
-        System.out.println(convert(1.0, LengthUnit.FEET, LengthUnit.INCH));
-        System.out.println(convert(3.0, LengthUnit.YARDS, LengthUnit.FEET));
-        System.out.println(convert(36.0, LengthUnit.INCH, LengthUnit.YARDS));
-        System.out.println(convert(1.0, LengthUnit.CENTIMETERS, LengthUnit.INCH));
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCH);
+
+        System.out.println(q1.add(q2));
+        System.out.println(add(1.0, LengthUnit.YARDS, 3.0, LengthUnit.FEET, LengthUnit.YARDS));
     }
 }
